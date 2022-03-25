@@ -1,0 +1,20 @@
+services:
+  postgres:
+    build:
+      context: ./postgres
+
+    container_name: postgres
+
+  apache:
+    build:
+      context: ./apache
+
+    container_name: apache
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    ports:
+      - 3000:80
+    volumes:
+      - ./apache/var/www/html:/var/www/html

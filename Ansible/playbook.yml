@@ -1,0 +1,41 @@
+- name: Update all servers
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Update and upgrade apt packages
+      apt:
+        upgrade: no
+        update_cache: yes
+        cache_valid_time: 86400
+        autoclean: yes
+
+- name: Configure staging servers
+  hosts: staging
+  remote_user: test
+
+  tasks:
+    - name: Create /bin in home dir
+      file:
+        path: ~/bin
+        state: directory
+
+    - name: Copy bashrc
+      copy:
+        src: /etc/ansible/agent_files/bashrc
+        dest: ~/.bashrc
+
+    - name: Copy x.sh
+      copy:
+        src: /etc/ansible/agent_files/x.sh
+        dest: ~/bin/x.sh
+
+    - name: Run script at 3:15pm daily
+      become: true
+      cron:
+        name: Run script at 3:15pm daily
+        user: root
+        weekday: '*'
+        hour: '15'
+        minute: '15'
+        job: '/home/ubuntu/x.sh'
