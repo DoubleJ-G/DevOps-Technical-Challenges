@@ -17,8 +17,7 @@ services:
 
     container_name: apache
     depends_on:
-      postgres:
-        condition: service_healthy
+      - 'postgres'
 
     networks:
       web:
