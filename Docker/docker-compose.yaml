@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   postgres:
     build:
@@ -5,16 +7,32 @@ services:
 
     container_name: postgres
 
+    networks:
+      web:
+        ipv4_address: 192.100.0.2
+
   apache:
     build:
       context: ./apache
 
     container_name: apache
     depends_on:
-      postgres:
-        condition: service_healthy
+      - 'postgres'
+
+    networks:
+      web:
+        ipv4_address: 192.100.0.3
 
     ports:
       - 3000:80
     volumes:
       - ./apache/var/www/html:/var/www/html
+
+networks:
+  web:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.100.0.0/24
+          gateway: 192.100.0.1

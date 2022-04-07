@@ -8,7 +8,13 @@ RUN apt-get update && \
 	  apt-get install -y --no-install-recommends \
 		apache2 \
 		php \
-		php-pgsql
+		php-pgsql \
+		postgresql-client
+
+# Copy entrypoint script
+
+COPY ./entrypoint.sh /usr/bin/entrypoint.sh
+RUN chmod +x /usr/bin/entrypoint.sh
 
 # Cleanup after installation
 
@@ -33,4 +39,4 @@ STOPSIGNAL SIGWINCH
 # Expose port and run apache
 
 EXPOSE 80
-CMD [ "apache2ctl", "-D", "FOREGROUND" ]
+CMD [ "usr/bin/entrypoint.sh" ]
